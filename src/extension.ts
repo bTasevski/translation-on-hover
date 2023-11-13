@@ -133,7 +133,7 @@ function matchTranslation(
   document: vscode.TextDocument,
   position: vscode.Position
 ): RegExpExecArray | undefined {
-  const range = getRange(document, position);
+  const range = document.getWordRangeAtPosition(position, T_REGEX);
   if (range) {
     const text = document.getText(range);
     const match = T_REGEX.exec(text);
@@ -149,18 +149,11 @@ function createHoverMessage(
   document: vscode.TextDocument,
   position: vscode.Position
 ): vscode.Hover {
-  const range = getRange(document, position);
+  const range = document.getWordRangeAtPosition(position, T_REGEX);
 
   const hoverMessage = new vscode.MarkdownString(`🌐 ${translatedText}`);
 
   return new vscode.Hover(hoverMessage, range);
-}
-
-function getRange(
-  document: vscode.TextDocument,
-  position: vscode.Position
-): vscode.Range | undefined {
-  return document.getWordRangeAtPosition(position, T_REGEX);
 }
 
 export function deactivate() {}
