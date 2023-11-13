@@ -19,9 +19,6 @@ const T_REGEX =
   /t\(["']([^"']+)["']\s*[^)]*|i18nKey=["']([^"':]+):([^"']+)["']/;
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log(
-    'Congratulations, your extension "hover-translation" is now active!'
-  );
   let disposable = vscode.languages.registerHoverProvider("*", {
     provideHover(document, position) {
       const matchedText = matchTranslation(document, position);
@@ -51,7 +48,7 @@ export function activate(context: vscode.ExtensionContext) {
       if (!Boolean(translationsFilePath)) {
         return undefined;
       }
-      console.log("qw23er123123");
+
       const jsonContent = fs.readFileSync(translationsFilePath!, "utf-8");
       const translations = JSON.parse(jsonContent);
       const translatedValue = translations[translationsKey] as string;
