@@ -3,8 +3,8 @@ import * as fs from "fs";
 import * as path from "path";
 
 type TranslationKeyWithFileName = {
-  jsonFileName: string;
-  translationsKey: string;
+  translationsFileName: string | undefined;
+  translationKey: string | undefined;
 };
 
 const TRANSLATIONS_FOLDERS_PATHS = ["public/translations", "translations"];
@@ -18,16 +18,21 @@ const LOCALE = "en-GB";
 const T_REGEX =
   /t\(["']([^"']+)["']\s*[^)]*|i18nKey=["']([^"':]+):([^"']+)["']/;
 
+//matches: useTranslations("main")
+const TRANSLATIONS_FILE_NAME_REGEX = /useTranslations\(['"]([^'"]+)['"]\);/;
+
 export function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.languages.registerHoverProvider("*", {
     provideHover(document, position) {
-      const matchedText = matchTranslation(document, position);
-      if (!matchedText) {
+      const matchedTranslationUsage = matchTranslation(document, position);
+      if (!matchedTranslationUsage) {
         return undefined;
       }
-
-      const { translationsKey, jsonFileName } =
-        getJsonFileNameAndTranslationKey(matchedText);
+      const { translationKey, translationsFileName } =
+        getTranslationsFileNameAndTranslationKey(matchedTranslationUsage);
+      if (translationKey === undefined || translationsFileName === undefined) {
+        return undefined;
+      }
 
       const currentFilePath = document.uri.fsPath;
       const nearestTranslationFolder = findNearestTranslationFolder(
@@ -40,9 +45,9 @@ export function activate(context: vscode.ExtensionContext) {
         return undefined;
       }
 
-      const translationsFilePath = findJsonFile(
+      const translationsFilePath = findTranslationsFile(
         nearestTranslationFolder!,
-        jsonFileName
+        translationsFileName
       );
 
       if (!Boolean(translationsFilePath)) {
@@ -51,7 +56,7 @@ export function activate(context: vscode.ExtensionContext) {
 
       const jsonContent = fs.readFileSync(translationsFilePath!, "utf-8");
       const translations = JSON.parse(jsonContent);
-      const translatedValue = translations[translationsKey] as string;
+      const translatedValue = translations[translationKey] as string;
 
       return createHoverMessage(translatedValue, document, position);
     },
@@ -60,10 +65,13 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposable);
 }
 
-function findJsonFile(directory: string, fileName: string): string | null {
-  const jsonFilePath = path.join(directory, `${fileName}.json`);
-  if (fs.existsSync(jsonFilePath)) {
-    return jsonFilePath;
+function findTranslationsFile(
+  directory: string,
+  fileName: string
+): string | null {
+  const translationsFilePath = path.join(directory, `${fileName}.json`);
+  if (fs.existsSync(translationsFilePath)) {
+    return translationsFilePath;
   }
   return null;
 }
@@ -115,15 +123,36 @@ const isWithinWorkspace = (
   );
 };
 
-function getJsonFileNameAndTranslationKey(
-  matchedText: RegExpExecArray
+function getTranslationsFileNameAndTranslationKey(
+  matchedTranslationUsage: RegExpExecArray
 ): TranslationKeyWithFileName {
-  let argument = matchedText[1];
-  if (matchedText[0].toString().includes("i18n")) {
-    argument = `${matchedText[2]}:${matchedText[3]}`;
+  let argument = matchedTranslationUsage[1];
+  if (matchedTranslationUsage[0].toString().includes("i18n")) {
+    argument = `${matchedTranslationUsage[2]}:${matchedTranslationUsage[3]}`;
   }
-  const [jsonFileName, translationsKey] = argument.split(":");
-  return { translationsKey, jsonFileName } as TranslationKeyWithFileName;
+
+  if (Boolean(matchedTranslationUsage.toString().includes(":"))) {
+    const [translationsFileName, translationKey] = argument.split(":");
+    return {
+      translationKey,
+      translationsFileName,
+    } as TranslationKeyWithFileName;
+  }
+
+  const currentFile = vscode.window.activeTextEditor?.document.getText();
+  const useTranslationsHookWithFileNameMatch = currentFile?.match(
+    TRANSLATIONS_FILE_NAME_REGEX
+  );
+  if (!useTranslationsHookWithFileNameMatch) {
+    return { translationKey: undefined, translationsFileName: undefined };
+  }
+  const translationKey = matchedTranslationUsage[1];
+  const translationsFileName = useTranslationsHookWithFileNameMatch[1];
+
+  return {
+    translationKey,
+    translationsFileName,
+  } as TranslationKeyWithFileName;
 }
 
 function matchTranslation(
