@@ -18,8 +18,10 @@ const LOCALE = "en-GB";
 const T_REGEX =
   /t\(["']([^"']+)["']\s*[^)]*|i18nKey=["']([^"':]+):([^"']+)["']/;
 
-//matches: useTranslations("main")
-const TRANSLATIONS_FILE_NAME_REGEX = /useTranslations\(['"]([^'"]+)['"]\);/;
+//matches patterns:
+// 1) useTranslations("main")
+// 2) useTranslation("main")
+const TRANSLATIONS_FILE_NAME_REGEX = /useTranslations?\(['"]([^'"]+)['"]\);/;
 
 export function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.languages.registerHoverProvider("*", {
