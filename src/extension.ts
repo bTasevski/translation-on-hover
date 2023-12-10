@@ -141,6 +141,7 @@ function getTranslationsFileNameAndTranslationKey(
     } as TranslationKeyWithFileName;
   }
 
+  //support for useTranslation("file-name")
   const currentFile = vscode.window.activeTextEditor?.document.getText();
   const useTranslationsHookWithFileNameMatch = currentFile?.match(
     TRANSLATIONS_FILE_NAME_REGEX
