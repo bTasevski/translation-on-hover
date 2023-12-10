@@ -1,8 +1,8 @@
 {
   "publisher": "BojanTasevski",
-  "name": "translation-on-hover",
-  "displayName": "translation-on-hover",
-  "description": "Hover on t() and see translation",
+  "name": "react-i18n-translation-on-hover",
+  "displayName": "React i18n translation on hover",
+  "description": "Hover on translation key and see it's value",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.83.0"

@@ -1,24 +1,20 @@
-# translation-on-hover README
+# VS Code Translation Hover Extension for React i18n
 
-README PLACEHOLDER
+## Overview
 
-## Following extension guidelines
+This extension provides hover information for translations in your VS Code project.
+It recognizes translation keys while using i18n for react and displays their corresponding translations as a hover message.
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+## Features
 
-- [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+- Hover over a translation key in your code to see its translation in english.
+- Automatically finds the nearest translation file based on your project structure.
+- Supports:
+  - `t("fileName:translationKey")`
+  - `t("translationKey")` - while using `const { t } = useTranslation("fileName")`
+  - `i18nKey="fileName:translationKey"`
 
-## Working with Markdown
+## Usage
 
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-- Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-- Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-- Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-- [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-- [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+1. Open a file containing translation keys.
+2. Hover over a translation key to see its translation.
