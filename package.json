@@ -3,6 +3,7 @@
   "name": "react-i18n-translation-on-hover",
   "displayName": "React i18n translation on hover",
   "description": "Hover on translation key and see it's value",
+  "repository": "https://github.com/bTasevski/translation-on-hover",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.83.0"
