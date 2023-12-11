@@ -4,13 +4,37 @@
   "displayName": "React i18n translation on hover",
   "description": "Hover on translation key and see it's value",
   "repository": "https://github.com/bTasevski/translation-on-hover",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.83.0"
   },
   "categories": [
     "Other"
   ],
+  "contributes": {
+    "configuration": {
+      "title": "React i18n Translation on Hover",
+      "properties": {
+        "reacti18nTranslationOnHover.defaultLocale": {
+          "type": "string",
+          "default": "en-GB",
+          "description": "Default locale of translations. It's a name of .json file."
+        },
+        "reacti18nTranslationOnHover.translationFoldersPaths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "translations",
+            "public/translations",
+            "public/locales"
+          ],
+          "description": "Paths to translations folders related to root of your react project. You can provide multiple. Extension will try to find the nearest folder related to current working directory."
+        }
+      }
+    }
+  },
   "main": "./dist/extension.js",
   "activationEvents": [
     "onLanguage"

@@ -7,13 +7,10 @@ type TranslationKeyWithFileName = {
   translationKey: string | undefined;
 };
 
-const TRANSLATIONS_FOLDERS_PATHS = [
-  "public/translations",
-  "translations",
-  "public/locales",
-];
-
-const LOCALE = "en-GB";
+interface IConfiguration {
+  defaultLocale: string;
+  translationFoldersPaths: string[];
+}
 
 // matches patterns:
 // 1) t("message")
@@ -41,11 +38,8 @@ export function activate(context: vscode.ExtensionContext) {
       }
 
       const currentFilePath = document.uri.fsPath;
-      const nearestTranslationFolder = findNearestTranslationFolder(
-        currentFilePath,
-        TRANSLATIONS_FOLDERS_PATHS,
-        LOCALE
-      );
+      const nearestTranslationFolder =
+        findNearestTranslationFolder(currentFilePath);
 
       if (!Boolean(nearestTranslationFolder)) {
         return undefined;
@@ -94,17 +88,16 @@ function findTranslationsFile(
   return null;
 }
 
-function findNearestTranslationFolder(
-  filePath: string,
-  translationFolderNames: string[],
-  languageCode: string
-): string | null {
+function findNearestTranslationFolder(filePath: string): string | null {
   const searchForTranslationFolder = (
     dir: string,
     workspaceFolders: readonly vscode.WorkspaceFolder[]
   ): string | null => {
-    for (const folderName of translationFolderNames) {
-      const translationFolderPath = path.join(dir, folderName, languageCode);
+    const translationFoldersPaths = getConfiguration().translationFoldersPaths;
+    const locale = getConfiguration().defaultLocale;
+
+    for (const folderName of translationFoldersPaths) {
+      const translationFolderPath = path.join(dir, folderName, locale);
       if (
         fs.existsSync(translationFolderPath) &&
         fs.statSync(translationFolderPath).isDirectory()
@@ -199,6 +192,18 @@ function createHoverMessage(
   const hoverMessage = new vscode.MarkdownString(`🌐 ${translatedText}`);
 
   return new vscode.Hover(hoverMessage, range);
+}
+
+function getConfiguration(): IConfiguration {
+  const configuration = vscode.workspace.getConfiguration(
+    "reacti18nTranslationOnHover"
+  );
+
+  const defaultLocale = configuration.get("defaultLocale") as string;
+  const translationFoldersPaths = configuration.get(
+    "translationFoldersPaths"
+  ) as string[];
+  return { defaultLocale, translationFoldersPaths } as const;
 }
 
 export function deactivate() {}
