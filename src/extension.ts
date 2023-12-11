@@ -211,7 +211,7 @@ function createHoverMessage(
 
 function getConfiguration(): IConfiguration {
   const configuration = vscode.workspace.getConfiguration(
-    "reacti18nTranslationOnHover"
+    "reacti18nextTranslationOnHover"
   );
 
   const defaultLocale = configuration.get("defaultLocale") as string;

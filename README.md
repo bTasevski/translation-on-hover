@@ -1,9 +1,9 @@
-# Translation Hover Extension for React i18n
+# Translation Hover Extension for React i18next
 
 ## Overview
 
 This extension provides hover information for translations in your VS Code project.
-It recognizes translation keys while using i18n for react and displays their corresponding translations as a hover message.
+It recognizes translation keys while using i18next for react and displays their corresponding translations as a hover message.
 
 ## Features
 
@@ -19,8 +19,8 @@ It recognizes translation keys while using i18n for react and displays their cor
 
 1. Provide correct paths to your translations folders related to root of your react project.
 2. Provide correct settings in `settings.json` e.g.:
-   `{"reacti18nTranslationOnHover.defaultLocale": "en-GB",
-"reacti18nTranslationOnHover.translationFolderPaths": ["translations", "public/translations"]}`
+   `{"reacti18nextTranslationOnHover.defaultLocale": "en-GB",
+"reacti18nextTranslationOnHover.translationFolderPaths": ["translations", "public/translations"]}`
    By default locale is set to be `en-GB` and folders to be `["translations",
 "public/translations",
 "public/locales"]`
