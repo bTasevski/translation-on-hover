@@ -11,6 +11,7 @@ It recognizes translation keys while using i18n for react and displays their cor
 - Automatically finds the nearest translation file based on your project structure.
 - Supports:
   - `t("fileName:translationKey")`
+  - `t("fileName:translationKey.nestedTranslationKey")`
   - `t("translationKey")` - while using `const { t } = useTranslation("fileName")`
   - `i18nKey="fileName:translationKey"`
 

@@ -7,7 +7,11 @@ type TranslationKeyWithFileName = {
   translationKey: string | undefined;
 };
 
-const TRANSLATIONS_FOLDERS_PATHS = ["public/translations", "translations"];
+const TRANSLATIONS_FOLDERS_PATHS = [
+  "public/translations",
+  "translations",
+  "public/locales",
+];
 
 const LOCALE = "en-GB";
 
@@ -58,6 +62,18 @@ export function activate(context: vscode.ExtensionContext) {
 
       const jsonContent = fs.readFileSync(translationsFilePath!, "utf-8");
       const translations = JSON.parse(jsonContent);
+
+      if (Boolean(translationKey.toString().includes("."))) {
+        const [translationKeyObject, translationKeyValue] =
+          translationKey.split(".");
+
+        const translatedValue = translations[translationKeyObject][
+          translationKeyValue
+        ] as string;
+
+        return createHoverMessage(translatedValue, document, position);
+      }
+
       const translatedValue = translations[translationKey] as string;
 
       return createHoverMessage(translatedValue, document, position);
