@@ -24,6 +24,8 @@ const T_REGEX =
 // 2) useTranslation("main")
 const TRANSLATIONS_FILE_NAME_REGEX = /useTranslations?\(['"]([^'"]+)['"]\);/;
 
+let translationFolderCache: string | null = null;
+
 export function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.languages.registerHoverProvider("*", {
     provideHover(document, position) {
@@ -38,8 +40,16 @@ export function activate(context: vscode.ExtensionContext) {
       }
 
       const currentFilePath = document.uri.fsPath;
-      const nearestTranslationFolder =
-        findNearestTranslationFolder(currentFilePath);
+
+      let nearestTranslationFolder: string | null;
+
+      const cachedTranslationFolder = getCachedTranslationFolder();
+
+      nearestTranslationFolder =
+        cachedTranslationFolder &&
+        isWithinWorkspace(currentFilePath, vscode.workspace.workspaceFolders!)
+          ? cachedTranslationFolder
+          : findNearestTranslationFolder(currentFilePath);
 
       if (!Boolean(nearestTranslationFolder)) {
         return undefined;
@@ -74,6 +84,10 @@ export function activate(context: vscode.ExtensionContext) {
     },
   });
 
+  vscode.window.onDidChangeTextEditorSelection(() => {
+    clearTranslationFolderCache();
+  });
+
   context.subscriptions.push(disposable);
 }
 
@@ -102,6 +116,7 @@ function findNearestTranslationFolder(filePath: string): string | null {
         fs.existsSync(translationFolderPath) &&
         fs.statSync(translationFolderPath).isDirectory()
       ) {
+        updateTranslationFolderCache(translationFolderPath);
         return translationFolderPath;
       }
     }
@@ -204,6 +219,18 @@ function getConfiguration(): IConfiguration {
     "translationFoldersPaths"
   ) as string[];
   return { defaultLocale, translationFoldersPaths } as const;
+}
+
+function getCachedTranslationFolder(): string | null {
+  return translationFolderCache;
+}
+
+function updateTranslationFolderCache(value: string | null): void {
+  translationFolderCache = value;
+}
+
+function clearTranslationFolderCache(): void {
+  translationFolderCache = null;
 }
 
 export function deactivate() {}
